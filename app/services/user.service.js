@@ -1,6 +1,7 @@
 const User = require('../model/user.model')
 var bcrypt = require('bcrypt-nodejs')
 var Token = require('../model/token.model')
+const jwt = require('jsonwebtoken');
 var eventEmitter = require('../../Events/event')
 var crypto = require('crypto')
 exports.userCreate = async function(req,res){
@@ -54,6 +55,8 @@ exports.userCreate = async function(req,res){
 
 exports.user_login = async function (req, res) {
     try {
+        console.log('test', req.body.email);
+        console.log('test', req.body.password);
         var userExist = await User.findOne(
             {
                 email: req.body.email
@@ -61,6 +64,7 @@ exports.user_login = async function (req, res) {
         )
         /// checks if user exist
         if (userExist) {
+            console.log(userExist);
             /// if exist just match encrypted password which we get from data with enter password
             if (bcrypt.compareSync(req.body.password, userExist.password)) {
                 if (!userExist.isVerified) {
@@ -76,8 +80,18 @@ exports.user_login = async function (req, res) {
                 let token = jwt.sign(payload, process.env.SECRET_KEY, {
                     expiresIn: 1440
                 })
-
-                res.send(token);
+                if(token){
+                    console.log(token);
+                    res.status(200).send({
+                        token
+                    })
+                
+                }
+                else{
+                    res.send('Something went wrong')
+                }
+                
+                
             }
             else {
                 return res.status(401).send({ msg: 'Invalid email or password.' });
@@ -124,7 +138,6 @@ exports.confirmationPost = function (req, res) {
      * Checks whether token is present with respective to user
      */
     Token.findOne({ token: req.body.token }, function (err, token) {
-        console.log('testing 1');
         if (!token) {
             return res.status(400).send({ type: 'not-verified', msg: 'We are unable to find valid token, your token may have been expired.' })
         }

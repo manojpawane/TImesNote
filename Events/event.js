@@ -21,10 +21,6 @@ var sendEmail = async function (subject, user, text) {
       pass: process.env.PASSWORD, // generated ethereal password
     },
   });
-console.log(process.env.EMAIL);
-console.log(process.env.PASSWORD);
-console.log(user.email);
-console.log(text);
   // send mail with defined transport object
   let info = await transporter.sendMail({
     from: 'manojdevinvent@gmail.com',
