@@ -18,9 +18,6 @@ exports.userCreate = function (req, res) {
 };
 
 exports.verifyAccount = function (req, res) {
-  console.log(req.body);
-  console.log(req.body.email);
-  console.log(req.body.token);
   req.assert("email", "Email is not valid").isEmail();
   req.assert("email", "Email cannot be blank").notEmpty();
   req.sanitize("email").normalizeEmail({ remove_dots: false });
